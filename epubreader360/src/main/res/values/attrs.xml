@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StyleableTextView">
+        <attr name="font" format="string"/>
+    </declare-styleable>
+
+    <declare-styleable name="DirectionalViewpager">
+        <attr name="direction" format="string">
+           <!-- <enum name="vertical" value="vertical"></enum>
+            <enum name="horizontal" value="horizontal"></enum>-->
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="SeekBarCompat">
+        <attr name="thumbColor" format="color" />
+        <attr name="progressColor" format="color"/>
+        <attr name="progressBackgroundColor" format="color"/>
+        <attr name="thumbAlpha" format="float"/>
+    </declare-styleable>
+</resources>

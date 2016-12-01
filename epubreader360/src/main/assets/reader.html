@@ -1,0 +1,272 @@
+<head>
+    <meta charset="UTF-8">
+    <title>Book like layout slider with CSS3 columns and jQuery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="file:///android_asset/jquery.min.js"></script>
+    <script src='file:///android_asset/rangy-core.js'></script>
+    <script src='file:///android_asset/rangy-serializer.js'></script>
+    <script src='file:///android_asset/android.selection.js'></script>
+    <style>* {
+        box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        }
+        @font-face {
+        font-family: "Ebrima";
+        src:url("file:///android_asset/fonts_am/ebrima.ttf");
+        }
+        @font-face {
+        font-family: "Jiret";
+        src:url("file:///android_asset/fonts_am/jiret.ttf");
+        }
+        @font-face {
+        font-family: "Nyala";
+        src:url("file:///android_asset/fonts_am/nyala_1.ttf");
+        }
+        @font-face {
+        font-family: "Wookianos";
+        src:url("file:///android_asset/fonts_am/wookianos.ttf");
+        }
+        html, body {
+        height: 100%;
+        }
+        body {
+        margin: 0;
+        padding: 0;
+        }
+
+        .sepia body,
+        .sepia #footer {
+        background-color: #EFE0B9;
+        color: #2A2C05;
+        }
+        .black body,
+        .black #footer {
+        background-color: #000;
+        color: #fff;
+        }
+        .day body,
+        .day #footer {
+        background-color: #fff;
+        color: #000;
+        }
+
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+        padding: 0 20px;
+        margin: 0 0 15px 0;
+        }
+        .yellow
+        {
+            background:yellow;
+        }
+        ul,
+        ol {
+        margin: 0 20px 15px 20px;
+        }
+        img {
+        max-height:calc(100%-40px);
+        max-width: calc(100%-40px);
+        margin: 0 20px 15px 20px;
+        }
+
+        .animate {
+        transition: transform 0.3s ease-out;
+        }
+
+        #viewport {
+        width: 100%;
+        height: calc(100%-30px);
+        position: relative;
+        overflow: hidden;
+        }
+
+        #holder {
+        padding: 20px 0 15px 0;
+        }
+
+        #footer {
+        background-color: #fff;
+        height: 30px;
+        line-height: 30px;
+        text-align: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        }</style>
+
+</head>
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"  xml:lang="en" lang="en">
+<div id="viewport">
+
+    <div id="holder">
+        replaceme
+    </div>
+</div>
+
+<script src="file:///android_asset/jquery.min.js"></script>
+
+<script>
+	  var pager = {
+
+    el: {
+      viewPort: $("#viewport"),
+      holder: $("#holder"),
+      pageNumber: $("#page-number")
+    },
+
+    viewPortWidth: $('#viewport').width(),
+    touchstartx: undefined,
+    touchmovex: undefined,
+    movex: undefined,
+    index: 0,
+    longTouch: undefined,
+    desiredHeight: $(window).height() - 30, // Account for footer
+    desiredWidth: $(window).width(),
+    pages: 0,
+    lastIndexOffset: 0,
+    holderHeight: 0,
+
+    init: function() {
+
+      this.holderHeight = this.el.holder.outerHeight();
+      this.pages = Math.ceil(this.holderHeight / this.desiredHeight);
+      alert(this.pages);
+      this.lastIndexOffset = ( this.pages - 1 ) * this.desiredWidth;
+      this.el.holder.css({
+        "width": (this.pages * this.desiredWidth),
+        "height": this.desiredHeight,
+        "column-count": this.pages,
+        "column-gap": 0
+      });
+
+      this.bindUIEvents();
+
+    },
+
+    bindUIEvents: function() {
+
+      this.el.holder.on("touchstart", function(event) {
+        pager.start(event);
+      });
+
+      this.el.holder.on("touchmove", function(event) {
+        pager.move(event);
+      });
+
+      this.el.holder.on("touchend", function(event) {
+        pager.end(event);
+      });
+
+    },
+
+    start: function(event) {
+      // Test for flick.
+      this.longTouch = false;
+      setTimeout(function() {
+        window.pager.longTouch = true;
+      }, 250);
+
+      // Get the original touch position.
+      this.touchstartx =  event.originalEvent.touches[0].pageX;
+
+      // The movement gets all janky if there's a transition on the elements.
+      $('.animate').removeClass('animate');
+    },
+
+    move: function(event) {
+      // Continuously return touch position.
+      this.touchmovex =  event.originalEvent.touches[0].pageX;
+      // Calculate distance to translate holder.
+      this.movex = this.index*this.viewPortWidth + (this.touchstartx - this.touchmovex);
+
+      if (this.movex < this.lastIndexOffset) { // Makes the holder stop moving when there is no more content.
+        this.el.holder.css('transform','translate3d(-' + this.movex + 'px,0,0)');
+      }
+    },
+
+    end: function(event) {
+      // Calculate the distance swiped.
+      var absMove = Math.abs(this.index*this.viewPortWidth - this.movex);
+      var absDistance = Math.abs(this.touchstartx - this.touchmovex);
+
+      // Calculate the index. All other calculations are based on the index.
+      if ((absDistance !== NaN && absDistance > 0)
+          && (absMove > this.viewPortWidth/2 || this.longTouch === false)) {
+        if (this.movex > this.index*this.viewPortWidth && this.index < (this.pages - 1)) {
+          this.index++;
+        } else if (this.movex < this.index*this.viewPortWidth && this.index > 0) {
+          this.index--;
+        }
+      }
+      // Move and animate the elements.
+      this.el.holder.addClass('animate').css('transform', 'translate3d(-' + this.index*this.viewPortWidth + 'px,0,0)');
+      // Update page number
+      this.el.pageNumber.text((this.index) + 1);
+      console.log(this.index);
+      // Reset move positions
+      this.touchstartx = undefined;
+      this.touchmovex = undefined;
+
+    },
+    navigate: function(index) {
+
+      if(index > (this.pages - 1))
+        return false;
+      this.index = index;
+      // Move and animate the elements.
+      this.el.holder.addClass('animate').css('transform', 'translate3d(-' + this.index*this.viewPortWidth + 'px,0,0)');
+      // Update page number
+      this.el.pageNumber.text((this.index) + 1);
+    },
+
+  };
+  pager.init();
+  function setFont(fontName){
+    document.getElementById("holder").style.fontFamily = fontName;
+  }
+  function maximizeFontSize(){
+    var prevSize = parseFloat(window.getComputedStyle(document.getElementById('holder')).fontSize);
+    document.getElementById("holder").style.fontSize =(prevSize+3) +"px";
+  }
+  function minimizeFontSize(){
+    var prevSize = parseFloat(window.getComputedStyle(document.getElementById('holder')).fontSize);
+    document.getElementById("holder").style.fontSize =(prevSize-3) +"px";
+  }
+  var getRectForSelectedText = function(elm) {
+    if (typeof elm === "undefined") elm = window.getSelection().getRangeAt(0);
+    var rect = elm.getBoundingClientRect();
+    return rect.left + "," + rect.top + "," + rect.width + "," + rect.height;
+}
+    function guid() {
+        function s4() {
+            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+        }
+        var guid = s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+        return guid.toUpperCase();
+    }
+    function getHighlightString() {
+        var range = window.getSelection().getRangeAt(0);
+        var selectionContents = range.extractContents();
+        var elm = document.createElement("highlight");
+        var id = guid();
+        elm.appendChild(selectionContents);
+        elm.setAttribute("id", id);
+        console.log("The id is "+id);
+        elm.setAttribute("class", "yellow");
+        range.insertNode(elm);
+        return "highlight"+window.getSelection().toString();
+    }
+    function highlight(text) {
+        var str = document.getElementById("holder").innerHTML;
+        var res = str.replace(text, "<highlight style='background-color:yellow;'>"+text+"</highlight>");
+        document.getElementById("holder").innerHTML = res;
+    }
+	  </script>

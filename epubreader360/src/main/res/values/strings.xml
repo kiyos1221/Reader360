@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Lomi Reader</string>
+    <string name="title_activity_content_highlight">ContentHighlight</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="preferences">Preferences</string>
+    <string name="nyala">fonts_am/nyala_1.ttf</string>
+    <string name="ebrima">fonts_am/ebrima.ttf</string>
+    <string name="jiret">fonts_am/jiret.ttf</string>
+    <string name="wookianos">fonts_am/wookianos.ttf</string>
+    <string name="highlight">Highlight</string>
+    <string name="pattern">\\{\\{(-?\\d+\\.?\\d*)\\,(-?\\d+\\.?\\d*)\\}\\,\\s\\{(-?\\d+\\.?\\d*)\\,(-?\\d+\\.?\\d*)\\}\\}</string>
+</resources>
